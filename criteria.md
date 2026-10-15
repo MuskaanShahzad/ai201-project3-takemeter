@@ -51,63 +51,43 @@ whether you hit them:
 
 ---
 
-## 1.
+## 1. Overall accuracy
 
-<!-- Your criterion. It must name a number. -->
+Overall accuracy on the held-out test set is at least 0.65.
 
-
-
-**Why this target:**
-
-
+**Why this target:** Three labels means a coin-flip guesser gets about 33%. 0.65 is a real jump above chance without assuming more than a small fine-tuned model on ~200 examples can plausibly deliver.
 
 ---
 
-## 2.
+## 2. Per-label performance
 
-<!-- Your criterion. -->
+Every label has an F1 of at least 0.55 on the held-out set, except `discussion`, which only needs 0.45.
 
-
-
-**Why this target:**
-
-
+**Why this target:** In the ~16 real posts I read while designing the taxonomy, `discussion` showed up least often of the three (roughly 3 of 16). I expect it to be my smallest label with the jumpiest test-split score, so it gets a looser bar than `build_log` and `bare_ask`.
 
 ---
 
-## 3.
+## 3. Balance
 
-<!-- Your criterion. -->
+No single label exceeds 65% of the 200 labeled examples.
 
-
-
-**Why this target:**
-
-
+**Why this target:** `bare_ask` looked like it could dominate — close to half of what I read fit it. Setting the ceiling under the brief's hard 70% cap leaves margin before the model just learns to guess that label.
 
 ---
 
-## 4.
+## 4. Consistency
 
-<!-- Your criterion. -->
+Re-labeling the same 20 posts, blind to my first pass, I'd match myself on at least 85% of them.
 
-
-
-**Why this target:**
-
-
+**Why this target:** The `discussion` vs. `bare_ask` boundary has a written decision rule, but it still takes judgment ("is this fundamentally seeking an answer?"). 85% leaves room for a few genuinely hard calls to land differently without meaning I'm applying the rule arbitrarily.
 
 ---
 
-## 5.
+## 5. Confidence
 
-<!-- Your criterion. -->
+Accuracy on the model's most-confident third of test predictions is at least 15 points higher than accuracy on its least-confident third.
 
-
-
-**Why this target:**
-
-
+**Why this target:** If confidence doesn't track correctness at all, the model is probably pattern-matching something spurious rather than the real distinction between labels. A 15-point gap is meaningful but realistic for a model that's actually learned something.
 
 ---
 
