@@ -39,10 +39,20 @@
 
 ## What This Does
 
-<!-- Your community, and what your classifier sorts posts into. Three or four
-     sentences. -->
+This project trains a classifier on posts from r/ClaudeAI, a public subreddit
+about using Claude and Claude Code. The goal is to sort posts by how
+substantial they are — separating quick reactions and bare questions from
+posts that show real reasoning, specifics, or structure.
 
-
+Candidate distinctions noticed while reading:
+- **Length/structure** — a single sentence vs. a multi-paragraph write-up with
+  headers or bullets.
+- **Concrete specifics vs. vague ask** — cites exact numbers, commands, or
+  links vs. gives no detail about what was tried or wanted.
+- **Self-contained vs. media-dump** — fully explains itself in text vs. is
+  basically just an image/video with a minimal caption.
+- **Shows own reasoning vs. bare question** — explains what was tried and why
+  vs. a context-free question.
 
 ---
 
