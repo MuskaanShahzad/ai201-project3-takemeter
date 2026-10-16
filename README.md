@@ -168,33 +168,41 @@ corrected every single one before accepting them — marked `pre-labelled, check
 
 ## How I Used AI
 
-<!-- Two specific moments — what you asked, what came back, what you changed.
-
-     ⚠️ Plus disclosure of any pre-labelling. If you had a model pre-label a
-     batch and then read and corrected every one, say that. It's an allowed
-     workflow and disclosing it costs you nothing. Not disclosing it is the
-     problem. -->
-
 **Moment 1**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* Before labelling anything, I gave Claude my three label
+  definitions and asked it to stress-test them by writing eight synthetic posts
+  that sat right on the boundaries between labels.
+- *What came back:* Claude found a real gap — a rhetorically-phrased opinion
+  with a question mark in it ("Why does everyone assume the context window
+  matters more than retrieval quality? It clearly doesn't.") would have been
+  wrongly caught by `bare_ask` just because of the question mark.
+- *What I changed:* I tightened the `discussion`/`bare_ask` decision rule so a
+  post only counts as `bare_ask` if it's genuinely seeking an answer — a
+  rhetorical question that asserts a position stays `discussion`, no matter how
+  it's punctuated.
 
 **Moment 2**
 
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* After I labelled the first 20 posts cold on my own,
+  I had Claude pre-label the rest of the 200 as I pasted raw scraped posts from
+  r/ClaudeAI in batches, against the same three definitions.
+- *What came back:* A label for every post, plus flags on the ones that
+  genuinely sat on a boundary — including two I'd tagged with both labels
+  myself (`bare_ask / discussion`), which Claude resolved using our own
+  decision rule rather than guessing.
+- *What I changed:* I read and corrected every single label before accepting
+  it, rather than batch-accepting.
 
-**Pre-labelling disclosure:**
+**Pre-labelling disclosure:** The first 20 rows of `labels.csv` are labelled
+`cold` — my own judgement, no AI involved. The remaining 181 rows were
+pre-labelled by Claude against the definitions above, then read and corrected
+by me one at a time before being accepted; those rows are marked
+`pre-labelled, checked` in the `note` column.
 
-<!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
 
-     Don't fill these in during unit 5.
-     ═══════════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════ -->
 
----
 
 ## Baseline vs. Trained
 
