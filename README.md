@@ -154,19 +154,15 @@ corrected every single one before accepting them — marked `pre-labelled, check
 
 ## The Training Run
 
-<!-- Your starting model, your settings, and anything you changed and why. -->
+**Base model:** `distilbert-base-uncased`
 
-**Base model:**
+**Settings:** 3 epochs, learning rate 2e-5, batch size 16, seed 42, max length 128 tokens.
 
-**Settings:** <!-- epochs, learning rate, batch size, seed -->
+**Device:** CPU (torch 2.14.1+cpu), 101 seconds. Recorded in `results.json` — a different machine running the same seed could get slightly different numbers since hardware does the arithmetic in a different order.
 
-**Anything I changed from the defaults, and why:**
+**Anything I changed from the defaults, and why:** Nothing — used the notebook's defaults as-is.
 
-**Split sizes:** <!-- train / val / test, and per-label counts in the test
-split. If a label had fewer than about 8 in test, say so — it explains a lot
-of next unit's variance. -->
-
-
+**Split sizes:** train 139 · val 31 · test 31 (70/15/15, stratified). Per-label counts in the test split: `build_log` 12, `bare_ask` 14, `discussion` 5. `discussion` is below the ~8 the notebook flags as thin — with only 34 `discussion` examples total, its test slice is small enough that its score will likely swing a lot between seeds.
 
 ---
 
