@@ -276,12 +276,6 @@ My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `d
 
 ## Agreement Report
 
-<!-- Your rate against the staff set, and every disagreement adjudicated.
-
-     Remember you labelled these 30 under the STAFF taxonomy in
-     data/staff_taxonomy.md, not your own — so every argument below is made
-     from those definitions and those decision rules. -->
-
 **Agreement rate:** 27 / 30 = 90%
 
 **Disagreements**
@@ -320,32 +314,32 @@ Staff said `hot_take`. I said `reaction`.
 
 **What the pattern in my disagreements tells me:**
 
-
-
 ---
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** Relabeled 2 of my 200 posts. I scanned all 92 `bare_ask` posts for signals of a missed concrete specific (numbers, "I built/tried/tested," timeframes, quoted outcomes), narrowed that to 8 candidates, and re-checked each one against my own decision rule from the Label Taxonomy. Only 2 actually needed to move: one post reporting a before/after token count from optimizing context usage (98k → 40k tokens) went from `bare_ask` to `build_log` — it has a real tested outcome, not just an ask. One post comparing Claude and ChatGPT subscriptions with a full stated opinion went from `bare_ask` to `discussion` — it fails `bare_ask`'s own "nothing to evaluate beyond the ask itself" test. The other 6 candidates I re-checked stayed `bare_ask` after review.
 
-**Which diagnosis pointed at it:**
+**Which diagnosis pointed at it:** Milestone 4 found `build_log`'s instability (F1 swinging 0.286–0.588 across seeds) traced to a labeling-consistency problem on the `bare_ask` boundary, backed directly by my Milestone 2 consistency check — all 4 of its mismatches ran `bare_ask` → something more specific.
 
 ### Run Log — After
 
+**Device:** CPU (torch 2.14.1+cpu), same machine.
+
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.65 | 0.548 | 0.548 | 0.613 | MISSED |
+| 2. Every label F1 ≥0.55, discussion ≥0.45 | build_log/bare_ask ≥0.55, discussion ≥0.45 | build_log 0.400 · discussion 0.000 · bare_ask 0.667 | build_log 0.400 · discussion 0.000 · bare_ask 0.667 | build_log 0.556 · discussion 0.000 · bare_ask 0.718 | MISSED |
+| 3. Balance ≤65% | ≤ 65% | bare_ask 45.0% · build_log 38.0% · discussion 17.5% (static, from the updated labels.csv) | — | — | MET |
+| 4. Consistency ≥85% | ≥ 85% | 80.0% | — | — | MISSED |
+| 5. Confidence gap ≥15 pts | ≥ 15 pts | 40 pts | 50 pts | 30 pts | MET |
+
+*Criterion 4 isn't re-tested here — it's the same 80% from Milestone 2's blind re-label of the 20 `cold` posts, carried forward as-is. That exercise measures how consistently I label from scratch; this unit's fix corrected 2 specific rows I'd already identified as wrong rather than redoing the blind re-label, so there's no new number to report for it.*
 
 **Did it help, and how do I know:**
+No, it didn't — and in one place it got slightly worse. Overall accuracy before was 0.613/0.516/0.581 (avg ~0.570); after is 0.548/0.548/0.613 (avg ~0.570) — basically the same average, just redistributed. `build_log`'s confusion with `bare_ask` actually got worse on seed 42 specifically: 7 of 12 `build_log` posts were misclassified as `bare_ask` before, 9 of 12 after. The one real positive is that the spread across seeds got tighter — accuracy spread went from 0.097 to 0.065, `build_log` F1 spread went from 0.302 to 0.156 — so the numbers are a bit more consistent run-to-run, even though they didn't get better.
 
-<!-- If it didn't, say so. Relabelling that didn't help is a genuinely
-     interesting result and earns full credit. -->
-
-
+My read: the diagnosis itself was right (Milestone 2's consistency check proved real `bare_ask` mislabeling exists), but fixing 2 rows out of 92 was too small a change to move a dataset-level problem. My keyword scan only flagged 8 candidates out of 92 — it almost certainly missed other mislabeled rows that don't contain an obvious number, timeframe, or trigger phrase, since I was matching surface signals, not rereading every post. A 2-row fix is well within the noise a single seed already produces, so if this boundary problem is real at the scale my diagnosis suggests, it probably needs either a full manual re-pass of all 92 `bare_ask` rows (not just the ones a keyword scan would catch) or more total training data to show up as a measurable improvement rather than noise.
 
 ---
 
