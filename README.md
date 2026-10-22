@@ -203,11 +203,7 @@ by me one at a time before being accepted; those rows are marked
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════ -->
 
-
 ## Baseline vs. Trained
-
-<!-- Both models on the same posts. `python baseline.py --trained results.json`
-     prints this table for you. -->
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
@@ -224,8 +220,6 @@ I think my trained model will beat the baseline the most on `discussion` — the
 
 **What the gap actually means:**
 My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `discussion` — the baseline already does an okay job spotting bare questions from the definition alone, it turns out it does better there once fine-tuned, and the biggest jump landed there instead of where I guessed. On `build_log` training barely moved the needle (+0.003) because the baseline was already strong on it — "built/tested something concrete" is apparently an easy pattern to match on the definition text alone, with or without training. The real finding is `discussion`: baseline and trained both scored 0.000, so fine-tuning added nothing there. That lines up with what I flagged earlier — `discussion` only has 5 posts in the test split, which is too few to measure reliably either way.
-
-
 
 ---
 
@@ -245,8 +239,6 @@ My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `d
 
 ### Confusion matrix
 
-<!-- Seed 42, same seed as the single run in unit 5. -->
-
 | true \ predicted | build_log | discussion | bare_ask |
 |---|---|---|---|
 | **build_log** | 5 | 0 | 7 |
@@ -256,35 +248,29 @@ My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `d
 **My biggest off-diagonal number, and what it means:**
 7 real `build_log` posts got called `bare_ask`, and zero went the other way. That's a direction, not just an error rate — the model defaults to `bare_ask` whenever a build post doesn't look like one, instead of mixing the two up evenly. `discussion` is its own separate problem: the model never predicted it even once, on any seed, so it's not confusing it with anything — it just never guesses it.
 
-
-
 ---
 
 ## Verdicts and Diagnoses
 
-<!-- MET or MISSED against LAST UNIT's target. The target has to hold across
-     all three seeds, not turn up sometimes. -->
-
 | # | Criterion | Target | Verdict | How I decided |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+| 1 | Overall accuracy | ≥ 0.65 | **MISSED** | All three seeds (0.613, 0.516, 0.581) came in under 0.65. The target has to hold across all three, and none of them reach it. |
+| 2 | Every label has F1 ≥0.55, except `discussion` ≥0.45 | build_log/bare_ask ≥0.55, discussion ≥0.45 | **MISSED** | `bare_ask` clears its bar on all three seeds (0.700/0.651/0.718). `build_log` clears it only on seed 42 (0.588), missing on seed 7 (0.286) and seed 2024 (0.444). `discussion` never clears even its lower 0.45 bar — it scored 0.000 on all three seeds. |
+| 3 | No label > 65% of 200 | ≤ 65% | **MET** | Static, doesn't depend on seed: `bare_ask` 45.8%, `build_log` 37.3%, `discussion` 16.9% — all comfortably under the cap. |
+| 4 | Re-label 20 posts blind, ≥85% self-match | ≥ 85% | **MISSED** | 16/20 = 80%, below target. Not seed-dependent — this is a property of my labeling, not the model. |
+| 5 | Confidence gap ≥15 pts | ≥ 15 pts | **MET** | Most-confident-third accuracy beat least-confident-third accuracy by 30, 70, and 50 points across the three seeds — comfortably over 15 on all of them. *(Stress-tested this one: part of the gap could just be "the model is confident when it guesses the majority label, `bare_ask`, which is also the easiest to get right" rather than true calibration — but the margin is 2-4x the target, so MET holds either way.)* |
 
 **Diagnoses**
 
-<!-- For each miss: the cause, and how you know. The four common causes are:
-     too few examples for a label, a boundary you applied inconsistently, a
-     genuinely hard label pair, and a task the model can't reach from this
-     much data.
+**Criterion 1 — Overall accuracy.** This isn't a separate problem from Criterion 2 — it's downstream of it. `bare_ask` alone is ~45% of the test set and already scores 0.65-0.72 F1, so accuracy is being dragged down specifically by `build_log` and `discussion` underperforming, diagnosed below.
 
-     ⚠️ Use your agreement report as evidence. It is the only instrument you
-     have that can tell a LABELLING problem from a MODEL problem, and this
-     section is graded on whether you used it that way. -->
+**Criterion 2 — Per-label F1.** Two different labels, two different causes.
 
+*`discussion` (F1 = 0.000 on all three seeds) — too few examples.* `discussion` is my smallest label: 34 of 200 posts, about 24 in training and only 5 in the test split. I flagged this exact risk in `criteria.md` before training even started ("I expect it to be my smallest label with the jumpiest test-split score"). The confusion matrix confirms it's not confused — it's just never predicted: on every seed, 100% of real `discussion` posts get called `bare_ask` (seed 42: 5/5, seed 7: 5/5) or split between `bare_ask` and `build_log` (seed 2024: 3/5 and 2/5) — never correctly. This is also the exact boundary (`discussion` vs. `bare_ask`) I called out as my hardest one in the Label Taxonomy section before I ever trained anything. The model found the same boundary hard that I did.
 
+*`build_log` (F1 swings from 0.286 to 0.588 across seeds) — a labeling-consistency problem, and I have direct evidence for it.* My own Milestone 2 consistency check found all 4 of my mismatches went the same direction: posts I originally labeled `bare_ask`, I relabeled `build_log` (3 of 4) or `discussion` (1 of 4) on a blind second pass. That means my training data likely has some real `build_log`/`discussion` posts sitting in `labels.csv` mislabeled as `bare_ask`. That lines up exactly with what the confusion matrix shows: across all three seeds, `build_log` gets called `bare_ask` far more than the reverse (7/12, 10/12, 8/12 — and `bare_ask` is never once predicted as `build_log`, on any seed). If some of my `build_log` training examples were themselves originally mislabeled `bare_ask`, the model would learn precisely this lopsided bias. My staff agreement check (Milestone 3) points the same direction from a second angle: all three of my disagreements with staff were cases where I defaulted to the more generic-sounding label (`reaction`) instead of checking the specific rule that would've pointed to `analysis` or `hot_take`. That's a different taxonomy, so it isn't direct proof about my own 200 labels, but it's evidence of a real habit in how I label — reaching for the label that requires less to be true — and the direction of the model's bias toward `bare_ask` (the label that by definition requires the *least* — "no concrete specific") matches that habit exactly.
+
+**Criterion 4 — Consistency.** The cause is the same boundary problem as `build_log` above, just measured directly instead of inferred: I don't consistently check whether `bare_ask`'s actual requirement ("no concrete specific offered") is true before reaching for it — on a blind second pass, 4 of my 20 posts moved from `bare_ask` to a label that did have a concrete specific (`build_log` 3 times, `discussion` once). That 80% isn't just a number against a target; it's the direct evidence behind the `build_log` diagnosis above, which is why I could call that one more than a guess.
 
 ---
 
