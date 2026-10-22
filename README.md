@@ -217,8 +217,7 @@ by me one at a time before being accepted; those rows are marked
 | F1 — `label_two` |  |  |  |
 
 **What I predicted before I looked:**
-<!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
-     prediction made afterwards isn't one. -->
+I think my trained model will beat the baseline the most on `build_log` — the baseline got 0.000 on it, it just called everything `discussion` instead. My model actually saw labelled examples of `build_log` during training, so it should be able to tell when someone's describing something they built instead of just defaulting to `discussion` every time.
 
 **What the gap actually means:**
 <!-- If the baseline matched your trained model, your fine-tuning added
