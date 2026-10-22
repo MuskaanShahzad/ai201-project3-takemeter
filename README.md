@@ -231,32 +231,30 @@ My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `d
 
 ## Run Log — Before
 
-<!-- Five criteria across three seeds. The notebook's section 6 prints the
-     spread table; the Target and Verdict columns are yours. -->
+**Device:** CPU (torch 2.14.1+cpu) — same machine as unit 5. About 150-165 seconds per seed.
+
+**On the spread:** Accuracy moved 0.097 across the three seeds (0.613 / 0.516 / 0.581) — macro F1 moved 0.117. That's just under the 10-point line the notebook itself flags as "too small or lopsided for a stable measure," but it's still enough that a criterion landing in that band can't really be called either way. With only 31 posts in the test split, that's not a surprise — it's the diagnosis.
 
 | Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
 |---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
+| 1. Overall accuracy | ≥ 0.65 | 0.613 | 0.516 | 0.581 | MISSED |
+| 2. Per-label F1 (≥0.55, discussion ≥0.45) | build_log/bare_ask ≥0.55, discussion ≥0.45 | build_log 0.588 · discussion 0.000 · bare_ask 0.700 | build_log 0.286 · discussion 0.000 · bare_ask 0.651 | build_log 0.444 · discussion 0.000 · bare_ask 0.718 | MISSED |
+| 3. Balance (no label > 65% of 200) | ≤ 65% | bare_ask 45.8% · build_log 37.3% · discussion 16.9% (static — from labels.csv, doesn't change with seed) | — | — | MET |
+| 4. Consistency (re-label 20 posts blind, ≥85% self-match) | ≥ 85% | 16/20 = 80.0% (blind re-label of the 20 `cold` posts against my original labels; not seed-dependent) | — | — | MISSED |
+| 5. Confidence (most-confident third ≥15 pts above least-confident third) | ≥ 15 pts | 30 pts (0.8 vs 0.5) | 70 pts (0.9 vs 0.2) | 50 pts (0.9 vs 0.4) | MET |
 
 ### Confusion matrix
 
-<!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
-     An image of a matrix earns nothing. -->
+<!-- Seed 42, same seed as the single run in unit 5. -->
 
-| true \ predicted |  |  |  |
+| true \ predicted | build_log | discussion | bare_ask |
 |---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
+| **build_log** | 5 | 0 | 7 |
+| **discussion** | 0 | 0 | 5 |
+| **bare_ask** | 0 | 0 | 14 |
 
 **My biggest off-diagonal number, and what it means:**
-<!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
-     direction. "7 real analysis posts were called hot_take and only 3 went the
-     other way" is a direction, not just an error rate. -->
+7 real `build_log` posts got called `bare_ask`, and zero went the other way. That's a direction, not just an error rate — the model defaults to `bare_ask` whenever a build post doesn't look like one, instead of mixing the two up evenly. `discussion` is its own separate problem: the model never predicted it even once, on any seed, so it's not confusing it with anything — it just never guesses it.
 
 
 
