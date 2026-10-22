@@ -218,7 +218,6 @@ by me one at a time before being accepted; those rows are marked
 - *What came back:* A shorter list of 8 posts worth a second look, not a labeling decision.
 - *What I changed:* I reread all 8 myself and made the call on each one. Only 2 needed to change; the other 6 I confirmed were labeled correctly. Claude found what to look at; I decided the label.
 
-
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════ -->
 
 ## Baseline vs. Trained
@@ -277,6 +276,8 @@ My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `d
 | 3 | No label > 65% of 200 | ≤ 65% | **MET** | Static, doesn't depend on seed: `bare_ask` 45.8%, `build_log` 37.3%, `discussion` 16.9% — all comfortably under the cap. |
 | 4 | Re-label 20 posts blind, ≥85% self-match | ≥ 85% | **MISSED** | 16/20 = 80%, below target. Not seed-dependent — this is a property of my labeling, not the model. |
 | 5 | Confidence gap ≥15 pts | ≥ 15 pts | **MET** | Most-confident-third accuracy beat least-confident-third accuracy by 30, 70, and 50 points across the three seeds — comfortably over 15 on all of them. *(Stress-tested this one: part of the gap could just be "the model is confident when it guesses the majority label, `bare_ask`, which is also the easiest to get right" rather than true calibration — but the margin is 2-4x the target, so MET holds either way.)* |
+
+**On revising criteria:** I didn't revise any of my five. All five were measurable exactly as I wrote them in `criteria.md` — none of them turned out to be unmeasurable or to be measuring the wrong thing, which is the only legitimate reason to revise. The misses below are real misses against the original targets, not targets I softened after seeing the numbers.
 
 **Diagnoses**
 
