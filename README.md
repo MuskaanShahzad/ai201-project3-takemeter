@@ -296,27 +296,23 @@ My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `d
      data/staff_taxonomy.md, not your own — so every argument below is made
      from those definitions and those decision rules. -->
 
-**Agreement rate:** ___ / 30 = ___%
-
-<!-- Nobody grades this number. A 60% who argues every disagreement from the
-     stated rules beats a 95% who wrote "staff was right" nine times. Several
-     of the 30 were chosen because they're genuinely ambiguous — you should be
-     winning some of these. -->
+**Agreement rate:** 27 / 30 = 90%
 
 **Disagreements**
 
-<!-- Three lines each: the post, both labels, and who you think is right and
-     why — grounded in the staff definitions you were both applying.
+**1.** *"Ran the same loop in 4C and in 24C within a fortnight, same effort by heart rate. 90 seconds slower in the heat over six miles. People keep saying heat costs you 'a bit' and it's more than that."*
+Staff said `analysis`. I said `reaction`.
+**My call:** Staff is right. There's no immediate reaction here and a checkable fact (90 seconds slower over six miles, same effort by heart rate) is doing the work of the argument. Rule 3 is explicit that immediacy doesn't outrank evidence — I read it as personal and informal and called it `reaction` on tone, not on whether a fact was load-bearing. **Pile (a)** — the rule covered this, I applied it loosely.
 
-     Then sort each into one of three piles:
-       (a) the rule covered it and I applied it loosely → a consistency problem
-       (b) the rule genuinely doesn't say               → a gap in the definitions
-       (c) the rule is ambiguous here and my reading is defensible → argue it.
-           This is a legitimate win.
+**2.** *"Three of us ran the same session on the same day, different shoes, within 10 seconds of each other over 5 miles. I'm not saying shoes do nothing, but whatever they do was smaller than the noise between three people."*
+Staff said `analysis`. I said `reaction`.
+**My call:** Staff is right — this is someone making an analysis that the shoes didn't have that much of an impact. "Within 10 seconds over 5 miles" is a checkable fact, and the sentence after it is a conclusion drawn from that fact, not a feeling. I'd already called a very similar post (sp_002, my own sleep-tracking data) `analysis` without hesitating — I just didn't apply the same test here because this one felt more casual and personal. **Pile (a)** — same mistake as #1: I let personal/informal tone stand in for the actual test.
 
-     Pile (a) is the one that matters most for your diagnosis: if you applied a
-     written rule two different ways on 30 posts, that is direct evidence about
-     what you did across your own 200. -->
+**3.** *"The club needs to stop pretending the Tuesday session is for everyone. It isn't and it never has been."*
+Staff said `hot_take`. I said `reaction`.
+**My call:** Staff is right. This isn't something that just recently happened to the writer — there's no specific incident named, just a standing claim ("it never has been") with passion behind it. The staff taxonomy's own rule 2 says a post can be heated and still be `hot_take` if it's making a general claim, which is exactly what tripped me up — I read the frustration as `reaction` instead of checking whether it reported a recent incident at all. **Pile (a)**.
+
+**What this says about my labelling:** All three disagreements landed in the same pile, and the same mistake underneath all three: I default to `reaction` whenever a post sounds personal, informal, or emotional — even when the actual content underneath has a load-bearing fact (#1, #2) or is a general claim dressed up with feeling (#3). None of these were cases where the staff rules were silent or ambiguous; I had the rule and didn't apply it. That's a real pattern, not three unrelated misses, and it's the thing Milestone 4's diagnosis needs to account for.
 
 **1.**
 > *The post:*
