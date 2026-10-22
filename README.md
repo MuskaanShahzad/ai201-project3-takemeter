@@ -200,6 +200,24 @@ pre-labelled by Claude against the definitions above, then read and corrected
 by me one at a time before being accepted; those rows are marked
 `pre-labelled, checked` in the `note` column.
 
+**Moment 3 (unit 6, Milestone 3 — agreement adjudication)**
+
+- *What I asked for:* I disagreed with staff on 3 posts. For each one, I gave Claude the post, the staff's rules, my label, and the staff's label, and asked it to argue both sides without telling me who was right. This is the exact method Milestone 3 suggests for working alone instead of in a breakout group.
+- *What came back:* Two arguments for each post, each one backed by a specific staff rule instead of just an opinion. For one post, it pointed out that I was going by the post's tone, when the staff's own rule says tone isn't what decides the label.
+- *What I changed:* I made the final call myself on all three, and I agreed with staff each time. Looking at all three together, I noticed my own pattern: I kept picking the more personal-sounding label whenever a post felt emotional, even when the actual rule pointed somewhere else.
+
+**Moment 4 (unit 6, Milestone 4 — diagnosing the misses)**
+
+- *What I asked for:* I had my three-seed results, my confusion matrix, my Milestone 2 consistency numbers, and my Milestone 3 agreement results, but hadn't connected them. I asked Claude to help me work out why `build_log` and `discussion` were missing their targets, instead of just writing "the model did badly on these labels."
+- *What came back:* Claude linked three things I had but hadn't put together: my consistency check (I kept mislabeling posts as `bare_ask`), my confusion matrix (the model also defaults to `bare_ask`), and my own prediction from Unit 5 that `discussion` vs. `bare_ask` would be my hardest boundary. Together, they pointed to two different problems: `build_log` had a labeling-consistency problem, and `discussion` simply had too few examples.
+- *What I changed:* Instead of one general answer, I wrote down two separate causes with separate evidence. That's what led me to pick my Milestone 5 fix.
+
+**Moment 5 (unit 6, Milestone 5 — finding what to relabel)**
+
+- *What I asked for:* Before changing any labels, I had Claude scan all 92 of my `bare_ask` posts for anything I might have missed — numbers, timeframes, or signs of an opinion that would make a post `build_log` or `discussion` instead.
+- *What came back:* A shorter list of 8 posts worth a second look, not a labeling decision.
+- *What I changed:* I reread all 8 myself and made the call on each one. Only 2 needed to change; the other 6 I confirmed were labeled correctly. Claude found what to look at; I decided the label.
+
 
 <!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════ -->
 
@@ -318,7 +336,7 @@ Staff said `hot_take`. I said `reaction`.
 
 ## The Improvement
 
-**What I changed:** Relabeled 2 of my 200 posts. I scanned all 92 `bare_ask` posts for signals of a missed concrete specific (numbers, "I built/tried/tested," timeframes, quoted outcomes), narrowed that to 8 candidates, and re-checked each one against my own decision rule from the Label Taxonomy. Only 2 actually needed to move: one post reporting a before/after token count from optimizing context usage (98k → 40k tokens) went from `bare_ask` to `build_log` — it has a real tested outcome, not just an ask. One post comparing Claude and ChatGPT subscriptions with a full stated opinion went from `bare_ask` to `discussion` — it fails `bare_ask`'s own "nothing to evaluate beyond the ask itself" test. The other 6 candidates I re-checked stayed `bare_ask` after review.
+**What I changed:** Relabeled 2 of my 200 posts. I had Claude scan all 92 `bare_ask` posts for signals of a missed concrete specific (numbers, "I built/tried/tested," timeframes, quoted outcomes), narrowed that to 8 candidates, and I re-checked each one myself against my own decision rule from the Label Taxonomy. Only 2 actually needed to move: one post reporting a before/after token count from optimizing context usage (98k → 40k tokens) went from `bare_ask` to `build_log` — it has a real tested outcome, not just an ask. One post comparing Claude and ChatGPT subscriptions with a full stated opinion went from `bare_ask` to `discussion` — it fails `bare_ask`'s own "nothing to evaluate beyond the ask itself" test. The other 6 candidates I re-checked stayed `bare_ask` after review.
 
 **Which diagnosis pointed at it:** Milestone 4 found `build_log`'s instability (F1 swinging 0.286–0.588 across seeds) traced to a labeling-consistency problem on the `bare_ask` boundary, backed directly by my Milestone 2 consistency check — all 4 of its mismatches ran `bare_ask` → something more specific.
 
@@ -339,56 +357,21 @@ Staff said `hot_take`. I said `reaction`.
 **Did it help, and how do I know:**
 No, it didn't — and in one place it got slightly worse. Overall accuracy before was 0.613/0.516/0.581 (avg ~0.570); after is 0.548/0.548/0.613 (avg ~0.570) — basically the same average, just redistributed. `build_log`'s confusion with `bare_ask` actually got worse on seed 42 specifically: 7 of 12 `build_log` posts were misclassified as `bare_ask` before, 9 of 12 after. The one real positive is that the spread across seeds got tighter — accuracy spread went from 0.097 to 0.065, `build_log` F1 spread went from 0.302 to 0.156 — so the numbers are a bit more consistent run-to-run, even though they didn't get better.
 
-My read: the diagnosis itself was right (Milestone 2's consistency check proved real `bare_ask` mislabeling exists), but fixing 2 rows out of 92 was too small a change to move a dataset-level problem. My keyword scan only flagged 8 candidates out of 92 — it almost certainly missed other mislabeled rows that don't contain an obvious number, timeframe, or trigger phrase, since I was matching surface signals, not rereading every post. A 2-row fix is well within the noise a single seed already produces, so if this boundary problem is real at the scale my diagnosis suggests, it probably needs either a full manual re-pass of all 92 `bare_ask` rows (not just the ones a keyword scan would catch) or more total training data to show up as a measurable improvement rather than noise.
+My read: the diagnosis itself was right (Milestone 2's consistency check proved real `bare_ask` mislabeling exists), but fixing 2 rows out of 92 was too small a change to move a dataset-level problem. The keyword scan I had Claude run only flagged 8 candidates out of 92 — it almost certainly missed other mislabeled rows that don't contain an obvious number, timeframe, or trigger phrase, since it was matching surface signals, not a full reread of every post. A 2-row fix is well within the noise a single seed already produces, so if this boundary problem is real at the scale my diagnosis suggests, it probably needs either a full manual re-pass of all 92 `bare_ask` rows (not just the ones a keyword scan would catch) or more total training data to show up as a measurable improvement rather than noise.
 
 ---
 
 ## What's Still Broken
 
-<!-- For each criterion still missed: what you'd do, and why you stopped. -->
+**Criterion 1 — Overall accuracy (still MISSED after the fix).** I'd collect more data, especially more `discussion` posts, since that label is dragging accuracy down the most. I stopped because this unit only allows one measured fix, and collecting and labeling 30+ new real posts is a bigger job than fits in this session.
 
+**Criterion 2 — Per-label F1 (still MISSED) — two different labels, two different next steps.** For `discussion`: the real fix is more examples. It only has 34 posts total and 5 in the test split, which is why it scores 0.000 no matter what else changes. I stopped for the same reason as above — that's new data collection, not something I could fit into this unit. For `build_log`: my 2-row fix didn't move the numbers, so the labeling problem is bigger than what the scan caught. The real next step is checking all 92 `bare_ask` posts by hand, not just the 8 the scan flagged. I stopped because I'd already used my one allowed fix on the smaller set, and a full 92-post recheck is a bigger job for another time.
 
+**Criterion 4 — Consistency (still MISSED, 80% vs. 85%).** All 4 of my mismatches went the same way — I called something `bare_ask` when it had a more specific label available. That means the fix isn't relabeling more posts, it's writing a clearer rule for when a mentioned tool or detail counts as a real "concrete specific" versus just incidental detail in a genuine question. I stopped because that's a rule change, and this unit's one allowed fix has to stay a change to the data, not the rules — so I used it on `labels.csv` instead.
 
 **The gap between what I meant my labels to capture and what the model
-learned:**
-<!-- Two sentences. Your confusion matrix is the evidence. -->
+learned:** I meant `bare_ask` to be a narrow category — a question with nothing else to it. But the model learned it as a catch-all for anything that isn't clearly a finished project or a stated opinion. My confusion matrix proves this: on every seed, real `build_log` and `discussion` posts get called `bare_ask`, and `bare_ask` is never once predicted as anything else — so the model learned "assume `bare_ask` unless proven otherwise," not three separate categories.
 
-
-
-<!-- ═════════════════════════════════════════════════════════════════════
-
-     SUBMISSION CHECKLIST — unit 5
-
-       [ ] criteria.md has five numbered criteria, each naming a NUMBER
-       [ ] Each has a reason underneath tied to your data or taxonomy
-       [ ] labels.csv: at least 150 rows, text/label/note, ONE file not split
-       [ ] No label above 70%
-       [ ] All five unit 5 sections have real content
-       [ ] Label Taxonomy includes the decision rule for your hardest boundary
-       [ ] The Dataset includes three hard cases
-       [ ] results.json and test_split.csv committed (the notebook does this)
-       [ ] At least four new commits
-       [ ] Repository URL submitted — WRITE IT DOWN
-
-     SUBMISSION CHECKLIST — unit 6
-
-       [ ] Baseline vs. Trained table, with your prediction written beforehand
-       [ ] Run Log — Before, five criteria across three seeds
-       [ ] Confusion matrix TYPED AS A MARKDOWN TABLE
-       [ ] A verdict on every criterion
-       [ ] A diagnosis for every miss, using the agreement report as evidence
-       [ ] Agreement Report with every disagreement adjudicated
-       [ ] One improvement, with Run Log — After
-       [ ] What's Still Broken
-       [ ] results_three_seeds_before.json, results_three_seeds_after.json,
-           baseline_results.json and
-           agreement_results.json committed
-       [ ] At least four new commits
-       [ ] The SAME repository URL as last unit
-
-     Do not delete and recreate this repository.
-     ═════════════════════════════════════════════════════════════════════ -->
-
----
+<!-- ══════════════════════════════════════════════════════════════════ -->
 
 📖 **How to run this project: [RUNNING.md](RUNNING.md)**
