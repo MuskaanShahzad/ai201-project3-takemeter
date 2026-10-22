@@ -211,17 +211,19 @@ by me one at a time before being accepted; those rows are marked
 
 | Measure | Baseline | Trained | Difference |
 |---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
+| Overall accuracy | 0.419 | 0.613 | +0.194 |
+| Macro F1 | 0.237 | 0.429 | +0.193 |
+| F1 — `bare_ask` | 0.125 | 0.700 | +0.575 |
+| F1 — `build_log` | 0.585 | 0.588 | +0.003 |
+| F1 — `discussion` | 0.000 | 0.000 | +0.000 |
 
 **What I predicted before I looked:**
-I think my trained model will beat the baseline the most on `build_log` — the baseline got 0.000 on it, it just called everything `discussion` instead. My model actually saw labelled examples of `build_log` during training, so it should be able to tell when someone's describing something they built instead of just defaulting to `discussion` every time.
+I think my trained model will beat the baseline the most on `discussion` — the baseline never got a single one right (F1 0.000), probably because `build_log` posts are easy to spot just from definition keywords like "built" or "tested", but telling an opinion apart from a question is a much subtler call that needs actual training examples.
+
+**A note on my definitions file:** `label_definitions.txt` still had the starter's placeholder labels (`analysis`/`hot_take`/`reaction`) in it when I first ran the baseline, so none of my real labels matched and it silently fell back to bare label names. I fixed the file with my real definitions and reran it — the numbers below are from the corrected run. I also ran it once on purpose with bare label names for comparison: accuracy dropped from 0.419 (with my definitions) to 0.129 (bare names), so that's what my definitions are worth, measured rather than assumed.
 
 **What the gap actually means:**
-<!-- If the baseline matched your trained model, your fine-tuning added
-     nothing — and that is a real finding, not a failure. Say it plainly. -->
+My prediction was wrong. Training helped the most on `bare_ask` (+0.575), not `discussion` — the baseline already does an okay job spotting bare questions from the definition alone, it turns out it does better there once fine-tuned, and the biggest jump landed there instead of where I guessed. On `build_log` training barely moved the needle (+0.003) because the baseline was already strong on it — "built/tested something concrete" is apparently an easy pattern to match on the definition text alone, with or without training. The real finding is `discussion`: baseline and trained both scored 0.000, so fine-tuning added nothing there. That lines up with what I flagged earlier — `discussion` only has 5 posts in the test split, which is too few to measure reliably either way.
 
 
 
